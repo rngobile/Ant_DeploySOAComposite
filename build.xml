@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project name="soaDeployAll" basedir="." default="help">
+	<property environment="env"/>
+	<property name="sca.location" value="${basedir}/"/>
+	<path id="classpath">
+		<fileset dir="${basedir}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<taskdef resource="net/sf/antconrib/antcontrib.properties" uri="http://ant-contrib.sourceforge.net">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant-contrib.jar"/>
+		</classpath>
+	</taskdef>
+	
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant-contrib.jar"/>
+		</classpath>
+	</taskdef>
+	
+	<target name="help">
+		<echo>
+			[ant]ERROR - You definitely need some help.
+		</echo>
+	</target>
+	
+	<available file="build.properties" property="file.exists" value="true"/>
+	<fail unless="file.exists" message="ERROR: Filename 'bulid.properties' does not exist."/>
+	<property file="build.properties"/>
+	
+	<target name="listComposites">
+		<trycatch property="tryName" reference="exception_ref">
+			<try>
+				<ant antfile="${oracle.home}/bin/ant-sca-mgmt.xml" target="listDeployedComposites" inheritall="false">
+					<property name="host" value="${server.host}"/>
+					<property name="port" value="${server.port}"/>
+					<property name="user" value="${server.user}"/>
+					<property name="password" value="${server.password}"/>
+				</ant>
+			</try>
+			<catch>
+				<property name="exception" refid="exception_ref"/>
+				<property name="message" value="ERROR IN TRYCATCH BLOCK: ${line.seperator}${exception}"/>
+				<echo>=========================================================</echo>
+				<echo message="${message}"/>
+			</catch>
+		</trycatch>
+	</target>
+</project>
